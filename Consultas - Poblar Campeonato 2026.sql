@@ -81,10 +81,16 @@ SELECT C.campeonato, G.grupo, G.id, STRING_AGG(P.Pais, ', ') paises
 	WHERE Campeonato='FIFA World Cup 2026'
 	GROUP BY C.campeonato, G.grupo, G.id;
 
+--Listar los estadios y sus ciudades
 SELECT P.pais, C.ciudad, E.estadio, E.capacidad
 	FROM pais P
 		JOIN ciudad C ON P.id = C.idpais
 		LEFT JOIN estadio E ON E.idciudad = C.id
-	WHERE P.pais IN ('México', 'Estados Unidos', 'Canadá')
+	WHERE P.pais IN ('México', 'Estados Unidos', 'Canadá');
 
+--Listar las fases
+SELECT *
+	FROM fase;
+
+--Listar los encuentros
 
