@@ -81,6 +81,15 @@ SELECT C.campeonato, G.grupo, G.id, STRING_AGG(P.Pais, ', ') paises
 	WHERE Campeonato='FIFA World Cup 2026'
 	GROUP BY C.campeonato, G.grupo, G.id;
 
+SELECT C.campeonato, G.grupo, G.id, STRING_AGG(P.Pais, ', ') paises
+	FROM campeonato C
+		JOIN Grupo G ON C.Id=G.IdCampeonato
+		LEFT JOIN GrupoPais GP ON GP.IdGrupo=G.Id
+		LEFT JOIN Pais P ON P.Id=GP.IdPais
+	WHERE Campeonato='FIFA World Cup 2018'
+	GROUP BY C.campeonato, G.grupo, G.id;
+
+
 --Listar los estadios y sus ciudades
 SELECT P.pais, C.ciudad, E.estadio, E.capacidad
 	FROM pais P
@@ -93,4 +102,48 @@ SELECT *
 	FROM fase;
 
 --Listar los encuentros
+SELECT C.Campeonato, E.IdCampeonato,
+    G.grupo, E.Fecha, 
+    E.IdPais1, P1.Pais Pais1, E.Goles1, 
+    E.IdPais2, P2.Pais Pais2, E.Goles2,  
+    E.IdFase, 
+    F.Fase, 
+    ES.Estadio || ' (' || CD.Ciudad || ')' AS Estadio, 
+    E.IdEStadio
+	FROM Encuentro E	
+		JOIN Pais P1 ON E.IdPais1 = P1.Id
+		JOIN Pais P2 ON E.IdPais2 = P2.Id
+		JOIN GrupoPais GP 
+		    ON GP.IdPais = E.IdPais1
+		JOIN Grupo G 
+		    ON G.Id = GP.IdGrupo 
+		   AND G.IdCampeonato = E.IdCampeonato   -- ✅ evita duplicados
+		JOIN Campeonato C ON E.IdCampeonato = C.Id
+		JOIN Estadio ES ON E.IdEstadio = ES.Id
+		JOIN Ciudad CD ON ES.IdCiudad = CD.Id
+		JOIN Fase F ON E.IdFase = F.Id
+	WHERE C.Campeonato = 'FIFA World Cup 2026'
+	  AND E.IdFase = 1
+	ORDER BY G.Grupo, E.Fecha;
 
+
+SELECT E.Fecha, 
+    P1.Pais Pais1, E.Goles1, 
+    P2.Pais Pais2, E.Goles2,  
+    ES.Estadio || ' (' || CD.Ciudad || ')' AS Estadio
+	FROM Encuentro E	
+		JOIN Pais P1 ON E.IdPais1 = P1.Id
+		JOIN Pais P2 ON E.IdPais2 = P2.Id
+		JOIN GrupoPais GP 
+		    ON GP.IdPais = E.IdPais1
+		JOIN Grupo G 
+		    ON G.Id = GP.IdGrupo 
+		   AND G.IdCampeonato = E.IdCampeonato   -- ✅ evita duplicados
+		JOIN Campeonato C ON E.IdCampeonato = C.Id
+		JOIN Estadio ES ON E.IdEstadio = ES.Id
+		JOIN Ciudad CD ON ES.IdCiudad = CD.Id
+		JOIN Fase F ON E.IdFase = F.Id
+	WHERE C.Campeonato = 'FIFA World Cup 2018'
+	  AND E.IdFase = 1
+	  AND G.grupo='H'
+	ORDER BY G.Grupo, E.Fecha;
